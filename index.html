@@ -38,7 +38,7 @@
             border-radius: 5px;
             font-size: 1em;
         }
-        .topup-button {
+        .topup-button, .attributes-button {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -50,11 +50,7 @@
             font-size: 1em;
             transition: background-color 0.3s, transform 0.3s;
         }
-        .topup-button:hover {
-            background-color: #333;
-            transform: scale(1.05);
-        }
-        .login-button:hover {
+        .topup-button:hover, .attributes-button:hover {
             background-color: #333;
             transform: scale(1.05);
         }
@@ -142,6 +138,7 @@
         <input id="username" type="number" placeholder="第幾小隊">
         <input id="amount" type="text" placeholder="屬性兌換代碼">
         <button class="topup-button" id="getElement">來個屬性</button>
+        <button class="attributes-button" id="getAttributes">查看擁有的屬性</button>
     </div>
     <div class="modal" id="modal">
         <div class="modal-content" id="modal-content">
@@ -171,8 +168,27 @@
             }
         });
 
+        document.getElementById('getAttributes').addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            showLoading();
+            const result = await getAttributes(username);
+            hideLoading();
+            if (result.success) {
+                showModal(`小隊 ${username} 擁有的屬性: ${result.attributes.join(', ')}`);
+            } else {
+                showModal('獲取屬性失敗');
+            }
+        });
+
         async function getElement(whichGroup, elementCode) {
             const url = `${scripturl}?action=getElement&whichGroup=${whichGroup}&elementCode=${elementCode}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            return result;
+        }
+
+        async function getAttributes(whichGroup) {
+            const url = `${scripturl}?action=getAttributes&whichGroup=${whichGroup}`;
             const response = await fetch(url);
             const result = await response.json();
             return result;
