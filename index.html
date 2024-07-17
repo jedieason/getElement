@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>屬性</title>
+    <style>
+        .header {
+            position: relative;
+            top: 20px;
+            left: 22px;
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 30%;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            background-color: white;
+        }
+        .container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .topup-button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .topup-button:hover {
+            background-color: #333;
+            transform: scale(1.05);
+        }
+        .login-button:hover {
+            background-color: #333;
+            transform: scale(1.05);
+        }
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadein 0.5s;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            opacity: 0.9;
+            width: 70%;
+        }
+        .modal-content button {
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            padding: 10px;
+            margin-top: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .modal-content button:hover {
+            background-color: #333;
+            transform: scale(1.05);
+        }
+        @keyframes fadein {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        /* 加載動畫的樣式 */
+        #loadingMessage {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: black;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓</div>
+        <h3>來撿屬性囉</h3>
+        <input id="username" type="number" placeholder="第幾小隊">
+        <input id="amount" type="text" placeholder="屬性兌換代碼">
+        <button class="topup-button" id="getElement">來個屬性</button>
+    </div>
+    <div class="modal" id="modal">
+        <div class="modal-content" id="modal-content">
+            <p id="elementgetting-info"></p>
+            <button onclick="closeModal()">關閉</button>
+        </div>
+    </div>
+
+    <div id="loadingMessage">
+        <div class="spinner"></div>
+        <div class="message-text">修蛋幾勒</div>
+    </div>
+
+    <script>
+        const scripturl = 'https://script.google.com/macros/s/AKfycbyR5d-rKqUKrMMHIAjaBLS5Os5jTBTpS31d8lOlQBuuYN_kFJaEHRhrh21McWco--6I/exec'; // 這裡填入你部署後的Apps Script網址
+
+        document.getElementById('getElement').addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const amount = document.getElementById('amount').value;
+            showLoading();
+            const result = await getElement(username, amount);
+            hideLoading();
+            if (result.success) {
+                showModal(`成功兌換${result.elementName}`);
+            } else {
+                showModal(result.message);
+            }
+        });
+
+        async function getElement(whichGroup, elementCode) {
+            const url = `${scripturl}?action=getElement&whichGroup=${whichGroup}&elementCode=${elementCode}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            return result;
+        }
+
+        function showModal(message) {
+            const modal = document.getElementById('modal');
+            const elementgettingInfo = document.getElementById('elementgetting-info');
+            elementgettingInfo.textContent = message;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'none';
+        }
+
+        function showLoading() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            loadingMessage.style.display = 'flex';
+            setTimeout(() => {
+                loadingMessage.style.opacity = '1';
+            }, 10);
+        }
+
+        function hideLoading() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            loadingMessage.style.opacity = '0';
+            setTimeout(() => {
+                loadingMessage.style.display = 'none';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
