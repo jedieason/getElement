@@ -8,10 +8,12 @@
         .header {
             position: relative;
             top: 20px;
-            left: 22px;
-            font-size: 1.4em;
-            color: #333;
+            left: 0px;
             margin-bottom: 30%;
+        }
+        .header img {
+            width: 150px; /* 根據你的需求調整尺寸 */
+            height: auto;
         }
         body {
             margin: 0;
@@ -147,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓</div>
+        <div class="header"><img src="logo.svg" alt="𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓"></div>
         <h3>來撿屬性囉</h3>
         <input id="username" type="number" placeholder="第幾小隊">
         <input id="amount" type="text" placeholder="屬性兌換代碼" pattern="[A-Z0-9]+" oninput="this.value = this.value.toUpperCase()">
@@ -180,7 +182,7 @@
             const result = await getElement(username, amount);
             hideLoading();
             if (result.success) {
-                showModal(`成功兌換${result.elementName}`);
+                showModal(`成功兌換<br><div class="attribute">${result.elementName}</div>`);
             } else {
                 showModal(result.message);
             }
