@@ -145,14 +145,54 @@
             margin: 5px;
             background-color: #f9f9f9;
         }
+        .toggle-button {
+            display: flex;
+            position: relative;
+            margin: 5px 0;
+            height: 40px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .toggle-button button {
+            width: 50%;
+            z-index: 1;
+            position: relative;
+            background-color: transparent;
+            border: none;
+            padding: 10px 25px;
+            cursor: pointer;
+            font-size: 16px;
+            color: black;
+        }
+        .slider {
+            position: absolute;
+            top: 5%;
+            height: 90%;
+            background-color: #fff;
+            border-radius: 5px;
+            transition: 0.4s;
+        }
+        .toggle-button.active .stock-slider {
+            left: 50%;
+        }
+        .stock-slider {
+            width: 48%;
+            left: 1%;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header"><img src="logo.svg" alt="𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓"></div>
         <h3>來撿屬性囉</h3>
+        <div class="toggle-button" id="toggle-button">
+            <button onclick="toggleSlide('left')">兌換</button>
+            <button onclick="toggleSlide('right')">庫存</button>
+            <div class="slider stock-slider" id="slider" style="left: 1%;"></div>
+        </div>
         <input id="username" type="number" placeholder="第幾小隊">
         <input id="amount" type="text" placeholder="屬性兌換代碼" pattern="[A-Z0-9]+" oninput="this.value = this.value.toUpperCase()">
+        <input id="password" type="password" placeholder="密碼">
         <button class="topup-button" id="getElement">來個屬性</button>
         <button class="attributes-button" id="getAttributes">查看擁有的屬性</button>
     </div>
@@ -169,11 +209,11 @@
     </div>
 
     <script>
-        const scripturl = 'https://script.google.com/macros/s/AKfycbxt8dFBIFFC0n7uyotFnWwETTGrWsO48e_eU1eU1V5NitipL9DoiciXOgifcvVqnHFg/exec'; // 這裡填入你部署後的Apps Script網址
+        const scripturl = 'https://script.google.com/macros/s/AKfycbzdyXX0m0xtFS3vJ8qQVQcGTDwy9OLi2KYAWIcE1fJo7buts9PzqqBVCUUvPN40VzD6/exec'; // 這裡填入你部署後的Apps Script網址
 
         document.getElementById('getElement').addEventListener('click', async () => {
             const username = document.getElementById('username').value;
-            const amount = document.getElementById('amount').value;
+            const password = document.getElementById('password').value;
             if (!username) {
                 showModal('請輸入第幾小隊');
                 return;
@@ -190,18 +230,19 @@
 
         document.getElementById('getAttributes').addEventListener('click', async () => {
             const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             if (!username) {
                 showModal('請輸入第幾小隊');
                 return;
             }
             showLoading();
-            const result = await getAttributes(username);
+            const result = await getAttributes(username, password);
             hideLoading();
             if (result.success) {
                 const attributesHtml = result.attributes.map(attr => `<div class="attribute">${attr}</div>`).join('');
                 showModal(`小隊 ${username} 擁有的屬性:<br>${attributesHtml}`);
             } else {
-                showModal('獲取屬性失敗');
+                showModal('密碼好像錯了⋯<br>再給你一次機會吧！');
             }
         });
 
@@ -213,8 +254,8 @@
             return result;
         }
 
-        async function getAttributes(whichGroup) {
-            const url = `${scripturl}?action=getAttributes&whichGroup=${whichGroup}`;
+        async function getAttributes(whichGroup, password) {
+            const url = `${scripturl}?action=getAttributes&whichGroup=${whichGroup}&password=${password}`;
             const response = await fetch(url);
             const result = await response.json();
             return result;
@@ -252,6 +293,25 @@
                 loadingMessage.style.display = 'none';
             }, 500);
         }
+
+        function toggleSlide(direction) {
+            var slider = document.getElementById('slider');
+            if (direction === 'left') {
+                slider.style.left = '1%';
+                document.getElementById('getElement').style.display = 'block';
+                document.getElementById('getAttributes').style.display = 'none';
+                document.getElementById('amount').style.display = 'block';
+                document.getElementById('password').style.display = 'none';
+            } else {
+                slider.style.left = '51%';
+                document.getElementById('getElement').style.display = 'none';
+                document.getElementById('getAttributes').style.display = 'block';
+                document.getElementById('amount').style.display = 'none';
+                document.getElementById('password').style.display = 'block';
+            }
+        }
+        document.getElementById('password').style.display = 'none';
+        document.getElementById('getAttributes').style.display = 'none';
     </script>
 </body>
 </html>
