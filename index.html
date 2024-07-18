@@ -98,6 +98,13 @@
             from {opacity: 0;}
             to {opacity: 1;}
         }
+        @keyframes fadeout {
+            from {opacity: 1;}
+            to {opacity: 0;}
+        }
+        .fade-out {
+            animation: fadeout 0.5s forwards;
+        }
 
         /* 加載動畫的樣式 */
         #loadingMessage {
@@ -129,6 +136,13 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .attribute {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 <body>
@@ -158,6 +172,10 @@
         document.getElementById('getElement').addEventListener('click', async () => {
             const username = document.getElementById('username').value;
             const amount = document.getElementById('amount').value;
+            if (!username) {
+                showModal('請輸入第幾小隊');
+                return;
+            }
             showLoading();
             const result = await getElement(username, amount);
             hideLoading();
@@ -170,15 +188,21 @@
 
         document.getElementById('getAttributes').addEventListener('click', async () => {
             const username = document.getElementById('username').value;
+            if (!username) {
+                showModal('請輸入第幾小隊');
+                return;
+            }
             showLoading();
             const result = await getAttributes(username);
             hideLoading();
             if (result.success) {
-                showModal(`小隊 ${username} 擁有的屬性: ${result.attributes.join(', ')}`);
+                const attributesHtml = result.attributes.map(attr => `<div class="attribute">${attr}</div>`).join('');
+                showModal(`小隊 ${username} 擁有的屬性:<br>${attributesHtml}`);
             } else {
                 showModal('獲取屬性失敗');
             }
         });
+
 
         async function getElement(whichGroup, elementCode) {
             const url = `${scripturl}?action=getElement&whichGroup=${whichGroup}&elementCode=${elementCode}`;
@@ -194,16 +218,21 @@
             return result;
         }
 
-        function showModal(message) {
+        function showModal(content) {
+            const info = document.getElementById('elementgetting-info');
+            info.innerHTML = content;
             const modal = document.getElementById('modal');
-            const elementgettingInfo = document.getElementById('elementgetting-info');
-            elementgettingInfo.textContent = message;
             modal.style.display = 'flex';
         }
 
+
         function closeModal() {
             const modal = document.getElementById('modal');
-            modal.style.display = 'none';
+            modal.classList.add('fade-out');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.remove('fade-out');
+            }, 500); // 與 fadeout 動畫的持續時間一致
         }
 
         function showLoading() {
