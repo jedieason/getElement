@@ -35,7 +35,7 @@
             margin: 10px 0;
             box-sizing: border-box;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 1em;
         }
         .topup-button, .attributes-button {
@@ -45,7 +45,7 @@
             background-color: black;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 1em;
             transition: background-color 0.3s, transform 0.3s;
@@ -150,7 +150,7 @@
         <div class="header">𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓</div>
         <h3>來撿屬性囉</h3>
         <input id="username" type="number" placeholder="第幾小隊">
-        <input id="amount" type="text" placeholder="屬性兌換代碼">
+        <input id="amount" type="text" placeholder="屬性兌換代碼" pattern="[A-Z0-9]+" oninput="this.value = this.value.toUpperCase()">
         <button class="topup-button" id="getElement">來個屬性</button>
         <button class="attributes-button" id="getAttributes">查看擁有的屬性</button>
     </div>
