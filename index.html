@@ -72,6 +72,7 @@
             align-items: center;
             background-color: rgba(0, 0, 0, 0.5);
             animation: fadein 0.5s;
+            z-index: 1000;
         }
         .modal-content {
             background-color: white;
@@ -213,13 +214,13 @@
 
         document.getElementById('getElement').addEventListener('click', async () => {
             const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const elementCode = document.getElementById('amount').value;
             if (!username) {
                 showModal('請輸入第幾小隊');
                 return;
             }
             showLoading();
-            const result = await getElement(username, amount);
+            const result = await getElement(username, elementCode);
             hideLoading();
             if (result.success) {
                 showModal(`成功兌換<br><div class="attribute">${result.elementName}</div>`);
@@ -249,6 +250,7 @@
 
         async function getElement(whichGroup, elementCode) {
             const url = `${scripturl}?action=getElement&whichGroup=${whichGroup}&elementCode=${elementCode}`;
+            console.log(url);
             const response = await fetch(url);
             const result = await response.json();
             return result;
@@ -256,6 +258,7 @@
 
         async function getAttributes(whichGroup, password) {
             const url = `${scripturl}?action=getAttributes&whichGroup=${whichGroup}&password=${password}`;
+            console.log(url);
             const response = await fetch(url);
             const result = await response.json();
             return result;
